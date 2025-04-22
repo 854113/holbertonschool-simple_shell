@@ -1,80 +1,43 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include "shell.h"
-#include <sys/types.h>
-#include <sys/wait.h>
-
-void exec_command(char *command);
-void display_prompt(int interact);
 
 /**
- * main - Simple shell
- * Return: 0 on success
+ * main - function
+ *
+ * Return: Always 0
  */
+
 int main(void)
 {
-	char *command = NULL;
-	size_t buffer_size = 0;
-	ssize_t char_readed;
-	int interact = isatty(STDIN_FILENO);
+	char *line = NULL;
+	size_t bufsize = 0;
+	ssize_t bytes_read;
 
 	while (1)
 	{
-		display_prompt(interact);
+		if (isatty(STDIN_FILENO))
+			printf("#Simple_Shell$ ");
 
-		char_readed = getline(&command, &buffer_size, stdin);
-		if (char_readed == -1)
+		bytes_read = getline(&line, &bufsize, stdin);
+		if (bytes_read == -1)
 		{
-			if (interact)
-				write(STDOUT_FILENO, "\n", 1);
+			if (isatty(STDIN_FILENO))
+			perror("Getline Error");
 			break;
 		}
 
-		if (char_readed > 0 && command[char_readed - 1] == '\n')
-			command[char_readed - 1] = '\0';
-
-		if (strlen(command) == 0)
-			continue;
-
-		if (strcmp(command, "exit") == 0)
+		line[strcspn(line, "\n")] = '\0';
+		if (strcmp(line, "exit") == 0)
+		{
+			if (isatty(STDIN_FILENO))
+				printf("Exit Shell...\n");
 			break;
-
-		exec_command(command);
+		}
+		execute_command(line);
 	}
-
-	free(command);
+	free(line);
+	line = NULL;
 	return (0);
-}
-
-/**
- * display_prompt - Prints shell prompt
- * @interact: if true, shows prompt
- */
-void display_prompt(int interact)
-{
-	if (interact)
-		write(STDOUT_FILENO, "$ ", 2);
-}
-
-/**
- * exec_command - Forks and executes command
- * @command: command to execute
- */
-void exec_command(char *command)
-{
-	pid_t pid = fork();
-
-	if (pid == 0)
-	{
-		char *argv[] = {command, NULL};
-		execve(command, argv, environ);
-		perror("./shell");
-		exit(EXIT_FAILURE);
-	}
-	else if (pid < 0)
-	{
-		perror("fork");
-	}
-	else
-	{
-		wait(NULL);
-	}
 }
