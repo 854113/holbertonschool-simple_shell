@@ -3,41 +3,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <errno.h>
-
-/**
- * execute_command - fork and execute a command using execve
- * @command: command to execute (full path)
- */
-
-void execute_command(char *command)
-{
-	pid_t pid;
-	char *argv[] = {command, NULL};
-	extern char **environ;
-
-	pid = fork();
-	if (pid == -1)
-	{
-		perror("fork");
-		return;
-	}
-
-	if (pid == 0)
-	{
-		if (execve(command, argv, environ) == -1)
-		{
-			perror("./shell");
-			exit(EXIT_FAILURE);
-		}
-	}
-	else
-	{
-		wait(NULL);
-	}
-}
 
 /**
  * main - Command interpreter function.
