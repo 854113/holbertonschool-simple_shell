@@ -11,10 +11,11 @@
  * execute_command - fork and execute a command using execve
  * @command: command to execute (full path)
  */
+
 void execute_command(char *command)
 {
 	pid_t pid;
-	char *argv[] = {command, NULL}; /* solo un argumento, el comando */
+	char *argv[] = {command, NULL};
 	extern char **environ;
 
 	pid = fork();
@@ -26,7 +27,6 @@ void execute_command(char *command)
 
 	if (pid == 0)
 	{
-		/* Proceso hijo: intenta ejecutar el comando */
 		if (execve(command, argv, environ) == -1)
 		{
 			perror("./shell");
@@ -35,7 +35,6 @@ void execute_command(char *command)
 	}
 	else
 	{
-		/* Proceso padre: espera al hijo */
 		wait(NULL);
 	}
 }
