@@ -6,6 +6,6 @@
 #include <stdio.h>
 #include <string.h>
 
-extern char **environ;
+void execute_command(char *command);
 
 #endif
