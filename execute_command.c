@@ -11,12 +11,13 @@
  * execute_command - fork and execute a command using execve
  * @command: command to execute (full path)
  */
-
 void execute_command(char *command)
 {
 	pid_t pid;
-	char *argv[] = {command, NULL};
-	extern char **environ;
+	char *argv[2];
+
+	argv[0] = command;
+	argv[1] = NULL;
 
 	pid = fork();
 	if (pid == -1)
@@ -26,6 +27,7 @@ void execute_command(char *command)
 	}
 
 	if (pid == 0)
+
 	{
 		if (execve(command, argv, environ) == -1)
 		{
@@ -33,6 +35,7 @@ void execute_command(char *command)
 			exit(EXIT_FAILURE);
 		}
 	}
+
 	else
 	{
 		wait(NULL);
