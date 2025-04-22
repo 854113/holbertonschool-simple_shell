@@ -12,39 +12,39 @@
 
 int main(void)
 {
-        char *command = NULL;
-        size_t buffer_size = 0;
-        ssize_t char_readed;
-        int interact;
+	char *command = NULL;
+	size_t buffer_size = 0;
+	ssize_t char_readed;
+	int interact;
 
-        interact = isatty(STDIN_FILENO);
+	interact = isatty(STDIN_FILENO);
 
-        while (1)
-        {
-                if (interact)
-                        write(STDOUT_FILENO, "$ ", 2);
+	while (1)
+	{
+		if (interact)
+			write(STDOUT_FILENO, "$ ", 2);
 
-                char_readed = getline(&command, &buffer_size, stdin);
+		char_readed = getline(&command, &buffer_size, stdin);
 
-                if (char_readed == -1)
-                {
-                        if (interact)
-                                write(STDOUT_FILENO, "\n", 1);
-                        break;
-                }
+		if (char_readed == -1)
+		{
+			if (interact)
+				write(STDOUT_FILENO, "\n", 1);
+			break;
+		}
 
-                if (char_readed > 0 && command[char_readed - 1] == '\n')
-                        command[char_readed - 1] = '\0';
+		if (char_readed > 0 && command[char_readed - 1] == '\n')
+			command[char_readed - 1] = '\0';
 
-                if (strlen(command) == 0)
-                        continue;
+		if (strlen(command) == 0)
+			continue;
 
-                if (strcmp(command, "exit") == 0)
-                        break;
+		if (strcmp(command, "exit") == 0)
+			break;
 
-                exe(command);
-        }
+		exe(command);
+	}
 
-        free(command);
-        return (0);
+	free(command);
+	return (0);
 }
