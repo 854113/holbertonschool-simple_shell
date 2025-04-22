@@ -1,49 +1,52 @@
-#include "shell.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 /**
- * main - Command interpreter function.
+ * main - command line interpreter.
  *
- * Return: 0 on success
+ * Return: 0
  */
+
+#define MAX_CMD_LEN 1024
+
 int main(void)
 {
-	char *command = NULL;
-	size_t buffer_size = 0;
-	ssize_t char_readed;
-	int interact;
-
-	interact = isatty(STDIN_FILENO);
+	char command[MAX_CMD_LEN];
 
 	while (1)
 	{
-		if (interact)
-			write(STDOUT_FILENO, "$ ", 2);
-
-		char_readed = getline(&command, &buffer_size, stdin);
-
-		if (char_readed == -1)
+		printf("#cisfun$ ");
+		fflush(stdout);
+		if (!fgets(command, sizeof(command), stdin))
 		{
-			if (interact)
-				write(STDOUT_FILENO, "\n", 1);
+			printf("\n");
 			break;
 		}
 
-		if (char_readed > 0 && command[char_readed - 1] == '\n')
-			command[char_readed - 1] = '\0';
-
-		if (strlen(command) == 0)
+		command[strcspn(command, "\n")] = 0;
+		if (*command == '\0')
 			continue;
 
-		if (strcmp(command, "exit") == 0)
-			break;
+		pid_t pid = fork();
 
-		execute_command(command);
+		if (pid < 0)
+		{
+			perror("fork");
+			continue;
+		}
+		else if (pid == 0)
+		{
+			execlp(command, command, NULL);
+			perror("./shell");
+			exit(EXIT_FAILURE);
+		}
+
+		wait(NULL);
 	}
 
-	free(command);
 	return (0);
 }
