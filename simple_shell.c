@@ -3,13 +3,48 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <errno.h>
+
+/**
+ * execute_command - fork and execute a command using execve
+ * @command: command to execute (full path)
+ */
+void execute_command(char *command)
+{
+	pid_t pid;
+	char *argv[] = {command, NULL}; /* solo un argumento, el comando */
+	extern char **environ;
+
+	pid = fork();
+	if (pid == -1)
+	{
+		perror("fork");
+		return;
+	}
+
+	if (pid == 0)
+	{
+		/* Proceso hijo: intenta ejecutar el comando */
+		if (execve(command, argv, environ) == -1)
+		{
+			perror("./shell");
+			exit(EXIT_FAILURE);
+		}
+	}
+	else
+	{
+		/* Proceso padre: espera al hijo */
+		wait(NULL);
+	}
+}
 
 /**
  * main - Command interpreter function.
  *
- * Return: 0 in succes
+ * Return: 0 on success
  */
-
 int main(void)
 {
 	char *command = NULL;
@@ -42,7 +77,7 @@ int main(void)
 		if (strcmp(command, "exit") == 0)
 			break;
 
-		exe(command);
+		execute_command(command);
 	}
 
 	free(command);
