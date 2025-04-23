@@ -3,14 +3,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
-#include <sys/types.h>
+#include <string.h>
 #include <sys/wait.h>
 
-#define MAX_CMD_LEN 1024
+extern char **environ;
 
-void prompt(void);
-void execute_command(char *command);
+#endif /* SHELL_H */
 
-#endif

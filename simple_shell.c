@@ -1,56 +1,55 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
+#include "shell.h"
+
+#define PROMPT "#cisfun$ "
 
 /**
- * main - command line interpreter.
- *
- * Return: 0 on success.
+ * main - Simple UNIX command interpreter.
+ * Return: Always 0.
  */
-
-#define MAX_CMD_LEN 1024
-
 int main(void)
 {
-	char command[MAX_CMD_LEN];
-	pid_t pid; /* ✅ Declarado al principio del bloque */
+	char *line = NULL;
+	size_t len = 0;
+	ssize_t char_readed;
+	pid_t pid;
 
 	while (1)
 	{
-		printf("#cisfun$ ");
-		fflush(stdout);
+		if (isatty(STDIN_FILENO))
+			write(STDOUT_FILENO, PROMPT, strlen(PROMPT));
 
-		if (!fgets(command, sizeof(command), stdin))
-		{
-			printf("\n");
+		char_readed = getline(&line, &len, stdin);
+		if (char_readed == -1)
 			break;
-		}
 
-		command[strcspn(command, "\n")] = 0;
+		line[char_readed - 1] = '\0';
 
-		if (*command == '\0')
+		if (line[0] == '\0')
 			continue;
 
 		pid = fork();
+		if (pid == 0)
+		{
+			char *argv[2];
 
-		if (pid < 0)
+			argv[0] = line;
+			argv[1] = NULL;
+
+
+			execve(line, argv, environ);
+			perror("./hsh");
+			exit(1);
+		}
+		else if (pid > 0)
+		{
+			wait(NULL);
+		}
+		else
 		{
 			perror("fork");
-			continue;
 		}
-		else if (pid == 0)
-		{
-			execlp(command, command, NULL);
-			perror("./shell");
-			exit(EXIT_FAILURE);
-		}
-
-		wait(NULL);
 	}
 
-	return (0);
+	free(line);
+		return (0);
 }
-
