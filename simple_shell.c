@@ -44,9 +44,3 @@ int start_shell(void)
 	free(input_line());
 	return (0);
 }
-
-int main(void)
-
-{
-	return (start_shell);
-}
