@@ -5,12 +5,9 @@
 #include <sys/wait.h>
 #include "shell.h"
 
-extern char **environ;
-
 /**
  * trim_spaces - remove leading and trailing spaces
  * @str: input string
- *
  * Return: trimmed string
  */
 char *trim_spaces(char *str)
@@ -19,39 +16,88 @@ char *trim_spaces(char *str)
 		str++;
 
 	if (*str == '\0')
-		return str;
+		return (str);
 
 	char *end = str + strlen(str) - 1;
+
 	while (end > str && (*end == ' ' || *end == '\t'))
 		end--;
 
 	end[1] = '\0';
-	return str;
+
+	return (str);
+}
+
+/**
+ * tokenize - split input into arguments
+ * @line: input string
+ * Return: array of tokens
+ */
+char **tokenize(char *line)
+{
+	static char *argv[64];
+	int i = 0;
+
+	argv[i] = strtok(line, " ");
+	if (argv[i] == NULL)
+		return (NULL);
+
+	while (argv[i] != NULL && i < 63)
+		argv[++i] = strtok(NULL, " ");
+
+	return (argv);
+}
+
+/**
+ * find_command - locate full path for command
+ * @cmd: command name
+ * @path_env: PATH string
+ * Return: full path (malloc'd) or NULL
+ */
+char *find_command(char *cmd, char *path_env)
+{
+	char *path, *full_path;
+
+	if (strchr(cmd, '/') != NULL)
+		return (strdup(cmd));
+
+	path = strtok(path_env, ":");
+	while (path)
+	{
+		full_path = malloc(strlen(path) + strlen(cmd) + 2);
+		if (!full_path)
+			return (NULL);
+
+		sprintf(full_path, "%s/%s", path, cmd);
+		if (access(full_path, X_OK) == 0)
+			return (full_path);
+
+		free(full_path);
+		path = strtok(NULL, ":");
+	}
+
+	return (NULL);
 }
 
 /**
  * run_com - execute a command
  * @input_line: user input line
- *
  * Return: void
  */
 void run_com(char *input_line)
 {
-	char *argv[64];
-	char *path_env = NULL, *path, *full_path;
+	char *path_env = NULL, *cmd_path;
+	char **argv;
 	pid_t pid;
-	int i = 0, j, replaced = 0;
+	int j;
 
 	input_line = trim_spaces(input_line);
 	if (*input_line == '\0')
 		return;
 
-	argv[i] = strtok(input_line, " ");
-	if (argv[0] == NULL)
+	argv = tokenize(input_line);
+	if (!argv || !argv[0])
 		return;
-
-	while (argv[i] != NULL && i < 63)
-		argv[++i] = strtok(NULL, " ");
 
 	for (j = 0; environ[j]; j++)
 	{
@@ -62,38 +108,22 @@ void run_com(char *input_line)
 		}
 	}
 
-	if (strchr(argv[0], '/') == NULL && path_env)
+	cmd_path = find_command(argv[0], path_env);
+	if (!cmd_path)
 	{
-		path = strtok(path_env, ":");
-		while (path)
-		{
-			full_path = malloc(strlen(path) + strlen(argv[0]) + 2);
-			if (!full_path)
-			{
-				free(path_env);
-				return;
-			}
-
-			sprintf(full_path, "%s/%s", path, argv[0]);
-
-			if (access(full_path, X_OK) == 0)
-			{
-				argv[0] = full_path;
-				replaced = 1;
-				break;
-			}
-
-			free(full_path);
-			path = strtok(NULL, ":");
-		}
+		perror(argv[0]);
+		free(path_env);
+		return;
 	}
+
+	argv[0] = cmd_path;
 
 	pid = fork();
 	if (pid == -1)
 	{
 		perror("Fork Error");
-		if (path_env)
-			free(path_env);
+		free(cmd_path);
+		free(path_env);
 		return;
 	}
 
@@ -106,13 +136,8 @@ void run_com(char *input_line)
 		}
 	}
 	else
-	{
 		wait(NULL);
-	}
 
-	if (replaced)
-		free(argv[0]);
-
-	if (path_env)
-		free(path_env);
+	free(cmd_path);
+	free(path_env);
 }
