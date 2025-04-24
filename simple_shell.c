@@ -24,18 +24,14 @@ int start_shell(void)
 		if (chars_read == -1)
 		{
 			if (isatty(STDIN_FILENO))
-				perror("Error Reading Line");
+				printf("\n");
 			break;
 		}
 
 		input_line[strcspn(input_line, "\n")] = 0;
 
 		if (strcmp(input_line, "exit") == 0)
-		{
-			if (isatty(STDIN_FILENO))
-				printf("Exiting Shell...\n");
 			break;
-		}
 
 		run_com(input_line);
 	}
