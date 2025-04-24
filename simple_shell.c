@@ -1,43 +1,52 @@
+#include "shell.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "shell.h"
+#include <string.h>
 
 /**
- * main - function
+ * start_shell - Entry point of command interpreter.
  *
- * Return: Always 0
+ * Return: 0
  */
 
-int main(void)
+int start_shell(void)
 {
-	char *command = NULL;
-	size_t buffer_size = 0;
-	ssize_t b_readed;
+	char *input_line = NULL;
+	size_t len = 0;
+	ssize_t chars_read;
 
 	while (1)
 	{
 		if (isatty(STDIN_FILENO))
-			printf("#Simple_Shell$ ");
+			printf("#MyShell> ");
 
-		b_readed = getline(&command, &buffer_size, stdin);
-		if (b_readed == -1)
+		chars_read = getline(&input_line, &len, stdin);
+		if (chars_read == -1)
 		{
 			if (isatty(STDIN_FILENO))
-			perror("Getline Error");
+				perror("Error Reading Line");
 			break;
 		}
 
-		command[strcspn(command, "\n")] = '\0';
-		if (strcmp(command, "exit") == 0)
+		input_line[strcspn(input_line, "\n")] = 0;
+
+		if (strcmp(input_line, "exit") == 0)
 		{
 			if (isatty(STDIN_FILENO))
-				printf("Exit Shell...\n");
+				printf("Exiting Shell...\n");
 			break;
 		}
-		exe_com(command);
+
+		run_com(input_line);
 	}
-	free(command);
-	command = NULL;
+
+	free(input_line);
 	return (0);
+}
+
+int main(void)
+
+{
+	return (start_shell);
 }

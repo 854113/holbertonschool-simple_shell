@@ -10,6 +10,7 @@
 
 extern char **environ;
 char *find_comm(char *command, char *path);
-void exe_com(char *command);
+void run_com(char *command);
+int start_shell(void);
 
 #endif
