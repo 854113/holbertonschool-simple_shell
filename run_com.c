@@ -12,7 +12,7 @@
  */
 void run_com(char *input_line)
 {
-	char *argv[64];
+	char *argv[64], *path_env, *path, *full_path;
 	pid_t pid;
 	int i = 0;
 
@@ -22,6 +22,35 @@ void run_com(char *input_line)
 
 	while (argv[i] != NULL && i < 63)
 		argv[++i] = strtok(NULL, " ");
+
+	if (strchr(argv[0], '/') == NULL)
+	{
+		path_env = getenv("PATH");
+		if (!path_env)
+		{
+			perror("PATH not found");
+			return;
+		}
+
+		path = strtok(path_env, ":");
+		while (path != NULL)
+		{
+			full_path = malloc(strlen(path) + strlen(argv[0]) + 2);
+			if (!full_path)
+				return;
+
+			sprintf(full_path, "%s/%s", path, argv[0]);
+
+			if (access(full_path, X_OK) == 0)
+			{
+				argv[0] = full_path;
+				break;
+			}
+
+			free(full_path);
+			path = strtok(NULL, ":");
+		}
+	}
 
 	pid = fork();
 	if (pid == -1)
@@ -42,4 +71,8 @@ void run_com(char *input_line)
 	{
 		wait(NULL);
 	}
+
+	/* Liberar si usamos path buscado */
+	if (strchr(argv[0], '/') != NULL)
+		free(argv[0]);
 }
