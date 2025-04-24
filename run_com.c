@@ -17,7 +17,7 @@ void run_com(char *input_line)
 	char *argv[64];
 	char *path_env = NULL, *path, *full_path;
 	pid_t pid;
-	int i = 0, j;
+	int i = 0, j, replaced = 0;
 
 	argv[i] = strtok(input_line, " ");
 	if (argv[0] == NULL)
@@ -49,6 +49,7 @@ void run_com(char *input_line)
 			if (access(full_path, X_OK) == 0)
 			{
 				argv[0] = full_path;
+				replaced = 1;
 				break;
 			}
 
@@ -68,7 +69,7 @@ void run_com(char *input_line)
 	{
 		if (execve(argv[0], argv, environ) == -1)
 		{
-			perror("Command Not Found");
+			perror(argv[0]);
 			exit(EXIT_FAILURE);
 		}
 	}
@@ -77,6 +78,6 @@ void run_com(char *input_line)
 		wait(NULL);
 	}
 
-	if (strchr(argv[0], '/') && access(argv[0], X_OK) == 0)
+	if (replaced)
 		free(argv[0]);
 }
