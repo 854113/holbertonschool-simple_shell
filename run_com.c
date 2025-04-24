@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include "shell.h"
 
+extern char **environ;
+
 /**
  * run_com - execute a command
  * @input_line: user input line
@@ -12,9 +14,10 @@
  */
 void run_com(char *input_line)
 {
-	char *argv[64], *path_env, *path, *full_path;
+	char *argv[64];
+	char *path_env = NULL, *path, *full_path;
 	pid_t pid;
-	int i = 0;
+	int i = 0, j;
 
 	argv[i] = strtok(input_line, " ");
 	if (argv[0] == NULL)
@@ -23,17 +26,19 @@ void run_com(char *input_line)
 	while (argv[i] != NULL && i < 63)
 		argv[++i] = strtok(NULL, " ");
 
-	if (strchr(argv[0], '/') == NULL)
+	for (j = 0; environ[j]; j++)
 	{
-		path_env = getenv("PATH");
-		if (!path_env)
+		if (strncmp(environ[j], "PATH=", 5) == 0)
 		{
-			perror("PATH not found");
-			return;
+			path_env = environ[j] + 5;
+			break;
 		}
+	}
 
+	if (strchr(argv[0], '/') == NULL && path_env)
+	{
 		path = strtok(path_env, ":");
-		while (path != NULL)
+		while (path)
 		{
 			full_path = malloc(strlen(path) + strlen(argv[0]) + 2);
 			if (!full_path)
@@ -72,7 +77,6 @@ void run_com(char *input_line)
 		wait(NULL);
 	}
 
-	/* Liberar si usamos path buscado */
-	if (strchr(argv[0], '/') != NULL)
+	if (strchr(argv[0], '/') && access(argv[0], X_OK) == 0)
 		free(argv[0]);
 }
