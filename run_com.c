@@ -6,6 +6,23 @@
 
 extern char **environ;
 
+char *trim_spaces(char *str)
+{
+	while (*str == ' ' || *str == '\t')
+		str++;
+
+	if (*str == 0)
+		return str;
+
+	char *end = str + strlen(str) - 1;
+	while (end > str && (*end == ' ' || *end == '\t'))
+		end--;
+
+	end[1] = '\0';
+
+	return str;
+}
+
 /**
  * run_com - execute a command
  * @input_line: user input line
@@ -18,6 +35,10 @@ void run_com(char *input_line)
 	char *path_env = NULL, *path, *full_path;
 	pid_t pid;
 	int i = 0, j, replaced = 0;
+
+	input_line = trim_spaces(input_line);
+	if (*input_line == '\0')
+		return;
 
 	argv[i] = strtok(input_line, " ");
 	if (argv[0] == NULL)
