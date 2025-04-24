@@ -41,6 +41,6 @@ int start_shell(void)
 		run_com(input_line);
 	}
 
-	free(input_line());
+	free(input_line);
 	return (0);
 }
