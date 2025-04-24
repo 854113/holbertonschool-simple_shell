@@ -11,33 +11,33 @@
 
 int main(void)
 {
-	char *line = NULL;
-	size_t bufsize = 0;
-	ssize_t bytes_read;
+	char *command = NULL;
+	size_t buffer_size = 0;
+	ssize_t b_readed;
 
 	while (1)
 	{
 		if (isatty(STDIN_FILENO))
 			printf("#Simple_Shell$ ");
 
-		bytes_read = getline(&line, &bufsize, stdin);
-		if (bytes_read == -1)
+		b_readed = getline(&command, &buffer_size, stdin);
+		if (b_readed == -1)
 		{
 			if (isatty(STDIN_FILENO))
 			perror("Getline Error");
 			break;
 		}
 
-		line[strcspn(line, "\n")] = '\0';
-		if (strcmp(line, "exit") == 0)
+		command[strcspn(command, "\n")] = '\0';
+		if (strcmp(command, "exit") == 0)
 		{
 			if (isatty(STDIN_FILENO))
 				printf("Exit Shell...\n");
 			break;
 		}
-		execute_command(line);
+		exe_com(command);
 	}
-	free(line);
-	line = NULL;
+	free(command);
+	command = NULL;
 	return (0);
 }
