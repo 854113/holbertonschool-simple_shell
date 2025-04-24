@@ -8,6 +8,7 @@
 #include <sys/wait.h>
 
 extern char **environ;
+extern int last_exit_status;
 
 void run_com(char *input_line);
 int start_shell(void);
