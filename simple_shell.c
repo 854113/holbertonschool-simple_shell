@@ -19,7 +19,7 @@ int start_shell(void)
 	while (1)
 	{
 		if (isatty(STDIN_FILENO))
-			printf("#MyShell> ");
+			printf("#Simple_Shell> ");
 
 		chars_read = getline(&input_line, &len, stdin);
 		if (chars_read == -1)
@@ -41,7 +41,7 @@ int start_shell(void)
 		run_com(input_line);
 	}
 
-	free(input_line);
+	free(input_line());
 	return (0);
 }
 
