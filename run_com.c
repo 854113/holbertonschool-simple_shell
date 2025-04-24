@@ -17,6 +17,9 @@ void run_com(char *input_line)
 	int i = 0;
 
 	argv[i] = strtok(input_line, " ");
+	if (argv[0] == NULL)
+		return;
+
 	while (argv[i] != NULL && i < 63)
 		argv[++i] = strtok(NULL, " ");
 
