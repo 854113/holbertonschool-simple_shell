@@ -1,11 +1,11 @@
 #include "shell.h"
 
 /**
- * main - Entry point for the shell program
+ * main - starts the shell
  *
- * Return: Always 0
+ * Return: 0 on success
  */
 int main(void)
 {
-    return (start_shell());
+	return (start_shell());
 }
