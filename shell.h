@@ -1,12 +1,15 @@
 #ifndef SHELL_H
 #define SHELL_H
 
-int start_shell(void);
-void run_com(char *input_line);
-char *trim_spaces(char *str);
-char **tokenize(char *line);
-char *find_command(char *cmd, char *path_env);
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <sys/wait.h>
 
 extern char **environ;
+
+void run_com(char *input_line);
+int start_shell(void);
 
 #endif
