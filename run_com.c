@@ -6,25 +6,19 @@
 
 /**
  * run_com - execute a command
- * @line: parameter
+ * @input_line: user input line
  *
  * Return: void
  */
-
 void run_com(char *input_line)
 {
-	char *argv[64], command_path[256], *envp[] = {"PATH=/bin:/usr/bin", NULL};
+	char *argv[64];
 	pid_t pid;
 	int i = 0;
 
 	argv[i] = strtok(input_line, " ");
 	while (argv[i] != NULL && i < 63)
 		argv[++i] = strtok(NULL, " ");
-
-	if (argv[0][0] != '/')
-		sprintf(command_path, "/bin/%s", argv[0]);
-	else
-		strncpy(command_path, argv[0], sizeof(command_path));
 
 	pid = fork();
 	if (pid == -1)
@@ -35,10 +29,10 @@ void run_com(char *input_line)
 
 	if (pid == 0)
 	{
-		if (execve(command_path, argv, envp) == -1)
+		if (execve(argv[0], argv, environ) == -1)
 		{
 			perror("Command Not Found");
-		exit(EXIT_FAILURE);
+			exit(EXIT_FAILURE);
 		}
 	}
 	else
