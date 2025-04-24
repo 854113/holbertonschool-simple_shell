@@ -1,21 +1,14 @@
 #include "shell.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/wait.h>
 
 /**
- * run_com - execute a command
- * @input_line: user input line
+ * run_com - executes a command
+ * @input_line: user input
  */
 void run_com(char *input_line)
 {
 	char *argv[64], *path_env = NULL, *path, *full_path;
 	pid_t pid;
-	int i = 0, j, found = 0;
-
-	input_line[strcspn(input_line, "\n")] = '\0';
+	int i = 0, j, found = 0, status;
 
 	if (input_line[0] == '\0')
 		return;
@@ -41,6 +34,7 @@ void run_com(char *input_line)
 			full_path = malloc(strlen(path) + strlen(argv[0]) + 2);
 			if (!full_path)
 				return;
+
 			sprintf(full_path, "%s/%s", path, argv[0]);
 			if (access(full_path, X_OK) == 0)
 			{
@@ -55,9 +49,17 @@ void run_com(char *input_line)
 
 	pid = fork();
 	if (pid == 0)
-		execve(argv[0], argv, environ), perror(argv[0]), exit(1);
+	{
+		execve(argv[0], argv, environ);
+		perror(argv[0]);
+		exit(2);
+	}
 	else
-		wait(NULL);
+	{
+		wait(&status);
+		if (WIFEXITED(status))
+			last_exit_status = WEXITSTATUS(status);
+	}
 
 	if (found)
 		free(argv[0]);
