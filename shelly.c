@@ -29,7 +29,7 @@ void trim_line(char *s)
 
 	if (!s)
 		return;
-	
+
 	for (i = 0; s[i] && s[i] != '\n'; i++)
 		;
 	if (s[i] == '\n')
