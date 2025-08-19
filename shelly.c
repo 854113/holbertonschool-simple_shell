@@ -19,30 +19,42 @@ int print_prompt(void)
 }
 
 /**
- * trim_line - Removes trailing '\n' and leading spaces/tabs in-place.
- * @s: buffer terminated by '\0'.
+ * trim_line - Strip trailing '\n', then trim trailing and leading spaces/tabs.
+ * @s: null-terminated buffer.
  */
 
 void trim_line(char *s)
 {
-	size_t i = 0, j = 0;
+	size_t i, end, start = 0;
 
 	if (!s)
 		return;
-
-	while (s[i] && s[i] != '\n')
-		i++;
+	
+	for (i = 0; s[i] && s[i] != '\n'; i++)
+		;
 	if (s[i] == '\n')
 		s[i] = '\0';
 
-	for (i = 0; s[i] == ' ' || s[i] == '\t'; i++)
-		;
-
-	if (i)
+	if (i == 0)
+		return;
+	end = i ? i - 1 : 0;
+	while ((int)end >= 0 && (s[end] == ' ' || s[end] == '\t'))
 	{
-		while (s[i])
-			s[j++] = s[i++];
-		s[j] = '\0';
+		s[end] = '\0';
+		if (end == 0)
+			break;
+		end--;
+	}
+
+	while (s[start] == ' ' || s[start] == '\t')
+		start++;
+
+	if (start)
+	{
+		i = 0;
+		while (s[start])
+			s[i++] = s[start++];
+		s[i] = '\0';
 	}
 }
 
