@@ -1,9 +1,5 @@
-/*
- * File: shelly.c
- * Desc: Helper functions for the simple shell.
- */
-
 #include "shelly.h"
+#include <string.h>
 
 #define PROMPT "#cisfun$ "
 
