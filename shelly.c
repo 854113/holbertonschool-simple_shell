@@ -1,7 +1,7 @@
-#include "shelly.h"
+#include "shell.h"
 
 /**
- * main - Simple shell main loop
+ * main - Simple shell loop
  */
 
 int main(int ac, char **av)
