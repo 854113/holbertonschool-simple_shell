@@ -61,13 +61,13 @@ This project is restricted to a specific set of system calls and C standard libr
 
 holbertonschool-simple_shell/
 
-- `shelly.c` # Main loop: prompt, getline, EOF handling
-─ `run_command.c` # Tokenization, PATH resolution, command execution
-─ `trim_line.c` # Utility: trims newline and spaces from input
-─ `shelly.h` # Header file with prototypes and includes
-─ `man_1_simple_shell` # Manual page for hsh
-─ `README.md` # Project documentation
-─ `AUTHORS` # Contributors
+- `shelly.c` Main loop: prompt, getline, EOF handling
+─ `run_command.c` Tokenization, PATH resolution, command execution
+─ `trim_line.c` Utility: trims newline and spaces from input
+─ `shelly.h` Header file with prototypes and includes
+─ `man_1_simple_shell` Manual page for hsh
+─ `README.md` Project documentation
+─ `AUTHORS` Contributors
 
 ---
 
