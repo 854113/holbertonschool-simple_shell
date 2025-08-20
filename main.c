@@ -1,47 +1,31 @@
-/*
- * File: main.c
- * Desc: Main loop for the minimal shell (no PATH resolution yet).
- */
-
-#include "shelly.h"
+#include "shell.h"
 
 /**
- * main - Loop: show prompt -> read line -> execute -> repeat.
- * @argc: argument count (unused).
- * @argv: argument vector; argv[0] used for error messages.
- * Return: 0 on success; !=0 if internal error occurred.
+ * main - Simple shell main loop
  */
-int main(int argc, char **argv)
+
+int main(int ac, char **av)
 {
-	char *line = NULL;
-	size_t cap = 0;
-	ssize_t nread;
-	int interactive = isatty(STDIN_FILENO);
-	int ret = 0;
+    char *line = NULL;
+    size_t cap = 0;
+    ssize_t n;
+    unsigned int lineno = 0;
+    int status = 0;
 
-	(void)argc;
+    (void)ac;
 
-	while (1)
-	{
-		if (print_prompt() == -1)
-			break;
+    while (1)
+    {
+        if (isatty(STDIN_FILENO))
+            write(1, "#cisfun$ ", 9);
 
-		nread = getline(&line, &cap, stdin);
-		if (nread == -1)
-		{
-			if (interactive)
-				write(STDOUT_FILENO, "\n", 1);
-			break;
-		}
+        n = getline(&line, &cap, stdin);
+        if (n == -1) { if (isatty(STDIN_FILENO)) write(1, "\n", 1); break; }
 
-		trim_line(line);
-		if (!line[0])
-			continue;
-
-		if (run_command(line, argv[0]) != 0)
-			ret = 1;
-	}
-
-	free(line);
-	return (ret);
+        lineno++;
+        trim_line(line);
+        if (*line) status = run_command(line, av[0], lineno);
+    }
+    free(line);
+    return status;
 }
