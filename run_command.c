@@ -17,7 +17,7 @@ static char **make_argv(char *line)
 
 static char *find_cmd(char *cmd)
 {
-    char *path, *p, *dir, *full;
+    char *path, *dir, *full;
     size_t len;
 
     if (strchr(cmd, '/'))
