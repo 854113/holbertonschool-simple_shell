@@ -1,25 +1,27 @@
 # 🐚 Holberton Shell (hsh)
 
-This repository contains the implementation of **hsh (Holberton Shell)**.  
+This repository contains the implementation of **hsh (Holberton Simple Shell)**.  
 It is a basic **command line interpreter** written in C, designed to reproduce some of the behavior of shells like `bash` or `sh`.
 
 ---
 
 ## 📖 Description
 
-- The shell works in both **interactive** and **non-interactive** mode:
-  - **Interactive mode**: displays a prompt (`#cisfun$ `) and waits for user input.  
-  - **Non-interactive mode**: executes commands provided through a pipeline or a script.
-- After each command is executed, the prompt is displayed again (interactive mode).
-- Handles special cases such as:
-  - `Ctrl+D` (EOF) to exit the shell.
-  - Empty lines or input with only spaces.
-- Supports **commands with arguments**.
-- Supports commands entered with:
-  - **Absolute/relative path** (`/bin/ls`)
-  - **PATH resolution** (`ls`)
-- Built-in commands:
-  - `exit` → exits the shell, returning the last command’s status.
+First of all, the program checks if the user runs the shell in interactive mode or not.
+
+- If not interactive, `hsh` will execute the command only once and then exit.
+- If interactive, a prompt will be displayed (#cisfun$ ) and hsh will wait for the user to enter a command. Once the command finishes executing, the prompt will show up again.
+
+The shell also manages border cases such as:
+
+- `Ctrl+D` (EOF)
+- Empty input lines `(\n)`
+
+It supports:
+
+- Commands with arguments
+- Absolute or relative paths (e.g., `/bin/ls`)
+- If the command is not written with a path, `hsh` will search for it across all the directories defined in the PATH environment variable.
 
 ---
 
