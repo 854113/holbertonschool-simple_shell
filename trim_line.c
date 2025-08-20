@@ -1,8 +1,8 @@
-#include "shelly.h"
+#include "shell.h"
 
 /**
- * trim_line - Removes trailing newline and leading/trailing spaces.
- * @line: string from getline
+ * trim_line - Removes newline and trims spaces/tabs at start and end.
+ * @line: string buffer from getline.
  */
 
 void trim_line(char *line)
