@@ -125,7 +125,7 @@ int run_command(char *line, char *prog, unsigned int lineno)
 	{
 		free(argv);
 		free(line);
-		exit(0);
+		exit(status);
 	}
 
 	cmd = find_cmd(argv[0]);
