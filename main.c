@@ -3,8 +3,8 @@
 /**
  * main - Loop: show prompt -> read line -> execute -> repeat.
  * @argc: argument count (unused).
- * @argv: argument vector; argv[0] is used for error messages.
- * Return: 0 on success, !=0 if internal error occurred.
+ * @argv: argument vector; argv[0] used for error messages.
+ * Return: 0 on success; !=0 if internal error occurred.
  */
 
 int main(int argc, char **argv)
@@ -41,4 +41,3 @@ int main(int argc, char **argv)
 	free(line);
 	return (ret);
 }
-
