@@ -56,7 +56,7 @@ void trim_line(char *s)
 }
 
 /**
- * build_argv - Splits a line into tokens (space/tab) to form argv (no realloc).
+	 * build_argv - Splits line into tokens (space/tab) to form argv.
  * @line: input command line (modified in-place).
  * Return: NULL-terminated argv on success, or NULL on failure/empty.
  */
@@ -74,7 +74,11 @@ char **build_argv(char *line)
 	{
 		if (line[i] != ' ' && line[i] != '\t')
 		{
-			if (!in) { cnt++; in = 1; }
+			if (!in)
+			{
+				cnt++;
+				in = 1;
+			}
 		}
 		else
 			in = 0;
