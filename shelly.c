@@ -56,38 +56,38 @@ void trim_line(char *s)
 }
 
 /**
- * build_argv - Splits a line into tokens (space/tab) to form argv.
+ * build_argv - Splits a line into tokens (space/tab) to form argv (no realloc).
  * @line: input command line (modified in-place).
  * Return: NULL-terminated argv on success, or NULL on failure/empty.
  */
 
 char **build_argv(char *line)
 {
-	char **argv = NULL, **tmp;
-	size_t cap = 0, n = 0;
+	size_t i, cnt = 0, in = 0, n = 0;
+	char **argv;
 	char *tok;
 
 	if (!line || !*line)
 		return (NULL);
 
-	for (tok = strtok(line, DELIMS); tok; tok = strtok(NULL, DELIMS))
+	for (i = 0; line[i]; i++)
 	{
-		if (n + 2 > cap)
+		if (line[i] != ' ' && line[i] != '\t')
 		{
-			size_t newcap = cap ? cap * 2 : 8;
-			tmp = (char **)realloc(argv, newcap * sizeof(*tmp));
-			if (!tmp)
-			{
-				free(argv);
-				return (NULL);
-			}
-			argv = tmp;
-			cap = newcap;
+			if (!in) { cnt++; in = 1; }
 		}
-		argv[n++] = tok;
+		else
+			in = 0;
 	}
+	if (cnt == 0)
+		return (NULL);
+
+	argv = (char **)malloc((cnt + 1) * sizeof(*argv));
 	if (!argv)
 		return (NULL);
+
+	for (tok = strtok(line, DELIMS); tok; tok = strtok(NULL, DELIMS))
+		argv[n++] = tok;
 	argv[n] = NULL;
 	return (argv);
 }
