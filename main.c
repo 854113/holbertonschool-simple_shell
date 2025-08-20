@@ -1,3 +1,8 @@
+/*
+ * File: main.c
+ * Desc: Main loop for the minimal shell (no PATH resolution yet).
+ */
+
 #include "shelly.h"
 
 /**
@@ -6,7 +11,6 @@
  * @argv: argument vector; argv[0] used for error messages.
  * Return: 0 on success; !=0 if internal error occurred.
  */
-
 int main(int argc, char **argv)
 {
 	char *line = NULL;
