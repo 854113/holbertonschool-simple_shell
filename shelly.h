@@ -6,12 +6,14 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <string.h>
 
 extern char **environ;
 
 int print_prompt(void);
 void trim_line(char *s);
-int run_command(char *cmd, char *progname);
+char **build_argv(char *line);
+void free_argv(char **argv);
+int run_command(char *line, char *progname);
 
-#endif /* SHELLY_H */
-
+#endif
