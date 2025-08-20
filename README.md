@@ -82,3 +82,8 @@ Compile with:
 
 Run with:
 `./hsh`
+
+---
+
+##👥 Authors
+Bruno Salle (854113)
