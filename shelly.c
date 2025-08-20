@@ -1,7 +1,7 @@
 #include "shelly.h"
-#include <string.h>
 
 #define PROMPT "#cisfun$ "
+#define DELIMS " \t"
 
 /**
  * print_prompt - Prints the prompt if stdin is interactive.
@@ -19,19 +19,19 @@ int print_prompt(void)
 }
 
 /**
- * trim_line - Strip trailing '\n', then trim trailing and leading spaces/tabs.
+ * trim_line - Removes trailing '\n', trims trailing and leading spaces/tabs.
  * @s: null-terminated buffer.
  */
 
 void trim_line(char *s)
 {
-	size_t i, end, start = 0;
+	size_t i = 0, end, start = 0, k = 0;
 
 	if (!s)
 		return;
 
-	for (i = 0; s[i] && s[i] != '\n'; i++)
-		;
+	while (s[i] && s[i] != '\n')
+		i++;
 	if (s[i] == '\n')
 		s[i] = '\0';
 
@@ -45,55 +45,102 @@ void trim_line(char *s)
 			break;
 		end--;
 	}
-
 	while (s[start] == ' ' || s[start] == '\t')
 		start++;
-
 	if (start)
 	{
-		i = 0;
 		while (s[start])
-			s[i++] = s[start++];
-		s[i] = '\0';
+			s[k++] = s[start++];
+		s[k] = '\0';
 	}
 }
 
 /**
- * run_command - Creates a child process and executes the command.
- * @cmd: path or name of the executable (no arguments).
- * @progname: argv[0] of the shell, used in error messages.
- * Return: 0 if executed, 1 if internal error occurred.
+ * build_argv - Splits a line into tokens (space/tab) to form argv.
+ * @line: input command line (modified in-place).
+ * Return: NULL-terminated argv on success, or NULL on failure/empty.
  */
 
-int run_command(char *cmd, char *progname)
+char **build_argv(char *line)
+{
+	char **argv = NULL, **tmp;
+	size_t cap = 0, n = 0;
+	char *tok;
+
+	if (!line || !*line)
+		return (NULL);
+
+	for (tok = strtok(line, DELIMS); tok; tok = strtok(NULL, DELIMS))
+	{
+		if (n + 2 > cap)
+		{
+			size_t newcap = cap ? cap * 2 : 8;
+			tmp = (char **)realloc(argv, newcap * sizeof(*tmp));
+			if (!tmp)
+			{
+				free(argv);
+				return (NULL);
+			}
+			argv = tmp;
+			cap = newcap;
+		}
+		argv[n++] = tok;
+	}
+	if (!argv)
+		return (NULL);
+	argv[n] = NULL;
+	return (argv);
+}
+
+/**
+ * free_argv - Frees argv created by build_argv.
+ * @argv: vector to free (only container, tokens are from line buffer).
+ */
+
+void free_argv(char **argv)
+{
+	free(argv);
+}
+
+/**
+ * run_command - Forks and execves with argv (supports arguments).
+ * @line: raw command line (will be tokenized in-place).
+ * @progname: shell name for error messages.
+ * Return: 0 on success path, 1 on internal errors (fork/wait failure).
+ */
+
+int run_command(char *line, char *progname)
 {
 	pid_t pid;
 	int wstatus;
-	char *argv_exec[2];
+	char **argv = build_argv(line);
 
-	if (!cmd || !*cmd)
+	if (!argv || !argv[0])
+	{
+		free_argv(argv);
 		return (0);
-
-	argv_exec[0] = cmd;
-	argv_exec[1] = NULL;
+	}
 
 	pid = fork();
 	if (pid == -1)
 	{
 		perror(progname);
+		free_argv(argv);
 		return (1);
 	}
 	if (pid == 0)
 	{
-		execve(cmd, argv_exec, environ);
+		execve(argv[0], argv, environ);
 		perror(progname);
 		_exit(127);
 	}
 	if (waitpid(pid, &wstatus, 0) == -1)
 	{
 		perror(progname);
+		free_argv(argv);
 		return (1);
 	}
+	free_argv(argv);
 	(void)wstatus;
 	return (0);
 }
