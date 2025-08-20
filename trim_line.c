@@ -1,4 +1,4 @@
-#include "shell.h"
+#include "shelly.h"
 
 /**
  * trim_line - Removes newline and trims spaces/tabs at start and end.
