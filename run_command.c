@@ -115,13 +115,13 @@ int run_command(char *line, char *prog, unsigned int lineno)
     pid_t pid;
     int status;
 
-    if (!argv || !argv[0]) { free(argv); return last_status; }
+    if (!argv || !argv[0]) { free(argv); return 0; }
 
     if (strcmp(argv[0], "exit") == 0)
     {
         free(argv);
         free(line);
-        exit(last_status);
+        exit(0);
     }
 
     cmd = find_cmd(argv[0]);
