@@ -1,4 +1,4 @@
-#include "shell.h"
+#include "shelly.h"
 
 /**
  * main - Simple shell main loop
