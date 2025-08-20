@@ -27,10 +27,33 @@ It is a basic **command line interpreter** written in C, designed to reproduce s
 
 This project is restricted to a specific set of system calls and C standard library functions:
 
-- `access`, `chdir`, `close`, `execve`, `exit`, `_exit`  
-- `fork`, `free`, `getline`, `isatty`, `kill`, `malloc`  
-- `open`, `opendir`, `perror`, `read`, `readdir`, `signal`  
-- `stat`, `lstat`, `fstat`, `strtok`, `wait`, `waitpid`, `wait3`, `wait4`, `write`
+- `access`
+- `chdir`
+- `close`
+- `execve`
+- `exit`
+- `_exit`  
+- `fork`
+- `free`
+- `getline`
+- `isatty`
+- `kill`
+- `malloc`  
+- `open`
+- `opendir`
+- `perror`
+- `read`
+- `readdir`
+- `signal`  
+- `stat`
+- `lstat`
+- `fstat`
+- `strtok`
+- `wait`
+- `waitpid`
+- `wait3`
+- `wait4`
+- `write`
 
 ---
 
@@ -55,4 +78,6 @@ Compile with:
 ---
 
 ##▶️ Usage
+
+Run with:
 `./hsh`
