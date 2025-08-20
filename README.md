@@ -59,7 +59,7 @@ This project is restricted to a specific set of system calls and C standard libr
 
 ## 📂 Project Structure
 
-holbertonschool-simple_shell/
+`holbertonschool-simple_shell/`
 
 - `shelly.c` Main loop: prompt, getline, EOF handling
 - `run_command.c` Tokenization, PATH resolution, command execution
