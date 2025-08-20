@@ -1,50 +1,77 @@
-#include "shelly.h"
+#include "shell.h"
 
 static char **make_argv(char *line)
 {
-    char **argv = NULL, *tok;
-    size_t n = 0;
+    int count = 0, i = 0;
+    char *copy, *tok;
+    char **argv;
 
-    for (tok = strtok(line, " \t"); tok; tok = strtok(NULL, " \t"))
-    {
-        argv = realloc(argv, sizeof(char *) * (n + 2));
-        if (!argv) return (NULL);
-        argv[n++] = tok;
-    }
-    if (argv) argv[n] = NULL;
-    return (argv);
+    copy = strdup(line);
+    if (!copy) return NULL;
+
+    tok = strtok(copy, " \t");
+    while (tok) { count++; tok = strtok(NULL, " \t"); }
+    free(copy);
+
+    if (count == 0) return NULL;
+
+    argv = malloc(sizeof(char *) * (count + 1));
+    if (!argv) return NULL;
+
+    tok = strtok(line, " \t");
+    while (tok) { argv[i++] = tok; tok = strtok(NULL, " \t"); }
+    argv[i] = NULL;
+    return argv;
 }
 
 static char *find_cmd(char *cmd)
 {
-    char *path, *dir, *full;
-    size_t len;
+    int i;
+    char *path = NULL, *copy, *dir, *p, *full;
+    size_t len, cmdlen;
 
-    if (strchr(cmd, '/'))
-        return access(cmd, X_OK) == 0 ? strdup(cmd) : NULL;
+    if (!cmd || !*cmd) return NULL;
 
-    path = getenv("PATH");
+    for (i = 0; cmd[i]; i++)
+        if (cmd[i] == '/')
+            break;
+    if (cmd[i] == '/')
+        return (access(cmd, X_OK) == 0) ? strdup(cmd) : NULL;
+
+    for (i = 0; environ[i]; i++)
+        if (strncmp(environ[i], "PATH=", 5) == 0)
+        { path = environ[i] + 5; break; }
     if (!path) return NULL;
-    path = strdup(path);
 
-    for (dir = strtok(path, ":"); dir; dir = strtok(NULL, ":"))
+    copy = strdup(path);
+    if (!copy) return NULL;
+
+    cmdlen = strlen(cmd);
+    dir = copy; p = copy;
+    while (1)
     {
-        len = strlen(dir) + strlen(cmd) + 2;
-        full = malloc(len);
-        if (!full) break;
-        snprintf(full, len, "%s/%s", dir, cmd);
-        if (access(full, X_OK) == 0) { free(path); return full; }
-        free(full);
+        if (*p == ':' || *p == '\0')
+        {
+            char save = *p;
+            *p = '\0';
+            if (*dir == '\0') dir = ".";
+            len = strlen(dir) + 1 + cmdlen + 1;
+            full = malloc(len);
+            if (!full) { free(copy); return NULL; }
+            snprintf(full, len, "%s/%s", dir, cmd);
+            if (access(full, X_OK) == 0) { free(copy); return full; }
+            free(full);
+            if (save == '\0') break;
+            dir = p + 1;
+        }
+        p++;
     }
-    free(path);
+    free(copy);
     return NULL;
 }
 
 /**
  * run_command - Execute a command with PATH support.
- * @line: command line (will be tokenized)
- * @prog: name of shell (argv[0])
- * @lineno: input line number for errors
  */
 
 int run_command(char *line, char *prog, unsigned int lineno)
