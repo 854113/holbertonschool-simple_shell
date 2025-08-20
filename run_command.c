@@ -1,4 +1,4 @@
-#include "shelly.h"
+#include "shell.h"
 
 static char **make_argv(char *line)
 {
@@ -72,6 +72,7 @@ static char *find_cmd(char *cmd)
 
 /**
  * run_command - Execute a command with PATH support.
+ * Adds support for "exit" built-in.
  */
 
 int run_command(char *line, char *prog, unsigned int lineno)
@@ -82,6 +83,13 @@ int run_command(char *line, char *prog, unsigned int lineno)
     int status;
 
     if (!argv || !argv[0]) { free(argv); return 0; }
+
+    if (strcmp(argv[0], "exit") == 0)
+    {
+        free(argv);
+        free(line);
+        exit(0);
+    }
 
     cmd = find_cmd(argv[0]);
     if (!cmd)
