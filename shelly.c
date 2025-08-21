@@ -16,8 +16,6 @@ int main(int ac, char **av)
 	unsigned int lineno = 0;
 	int status = 0;
 
-	(void)ac;
-
 	while (1)
 	{
 		if (isatty(STDIN_FILENO))
