@@ -52,54 +52,7 @@ static char *find_cmd(char *cmd)
 	if (cmd[i] == '/')
 		return ((access(cmd, X_OK) == 0) ? strdup(cmd) : (NULL));
 
-	for (i = 0; environ[i]; i++)
-		if (strncmp(environ[i], "PATH=", 5) == 0)
-		{
-			path = environ[i] + 5;
-			break;
-		}
-	if (!path)
-		return (NULL);
-
-	copy = strdup(path);
-	if (!copy)
-		return (NULL);
-
-	cmdlen = strlen(cmd);
-	dir = copy;
-	p = copy;
-	while (1)
-	{
-		if (*p == ':' || *p == '\0')
-		{
-			char save = *p;
-
-			*p = '\0';
-			if (*dir == '\0')
-				dir = ".";
-			len = strlen(dir) + 1 + cmdlen + 1;
-			full = malloc(len);
-			if (!full)
-			{
-				free(copy);
-				return (NULL);
-			}
-			snprintf(full, len, "%s/%s", dir, cmd);
-			if (access(full, X_OK) == 0)
-			{
-				free(copy);
-				return (full);
-			}
-			free(full);
-			if (save == '\0')
-				break;
-			dir = p + 1;
-		}
-		p++;
-	}
-	free(copy);
-	return (NULL);
-}
+	
 
 /**
  * run_command - Execute a command with PATH support.
